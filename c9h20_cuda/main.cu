@@ -34,7 +34,7 @@
 /// - Optimize the pixel dissolving effect and XOR fractal effect with CUDA.
 /// - Replace rectangle jumbling with a quirky, CUDA-accelerated interlacing effect.
 /// - Reduce the amount of pixel drift in the pixel dissolving effect to give a blobbier effect, similar to GOL amoeba rules.
-/// - Speed up icon and text spam to keep up with the flashiness of the new CUDA-accelerated effects.
+/// - Speed up text spam to keep up with the flashiness of the new CUDA-accelerated effects.
 /// 
 
 #pragma region Preprocessor
@@ -49,6 +49,8 @@
 #include <curand.h>
 
 #include <numeric>
+
+#define AUDIO
 #pragma endregion
 
 #pragma region Globals
@@ -179,7 +181,7 @@ template<typename T> void debug_log(T msg) {
 }
 #pragma endregion
 
-#pragma CUDA Kernels
+#pragma region CUDA Kernels
 // taken from stackoverflow, simple overflowing prng concept
 __device__ size_t cuda_prng2(size_t x, size_t y) {
 	x = x * 3266489917 + 374761393;
@@ -619,7 +621,9 @@ struct payload {
 	void run() {
 		// queue up audio
 		debug_log("Queueing audio...\n");
+#ifdef AUDIO
 		HWAVEOUT audio_handle = audio_queuer(duration);
+#endif
 		debug_log("Audio queued.\n");
 
 		// set up thread and synchronization event
@@ -638,6 +642,10 @@ struct payload {
 
 		// clean up
 		debug_log("Cleaning up everything...\n");
+#ifdef AUDIO
+		waveOutClose(audio_handle);
+		audio_destructor();
+#endif
 		throw_assert(SetEvent(graphics_terminate_event_handle), "failed to set graphics event");
 		debug_log("Event signalled...\n");
 		throw_assert(WaitForSingleObject(graphics_thread, INFINITE) == WAIT_OBJECT_0, "failed to wait for graphics thread");
