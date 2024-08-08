@@ -13,13 +13,17 @@
 /// 
 /// Although this is a C++ program, it is styled and structured more in the direction of
 /// how a C program would be structured, given the low-level nature of the program.
+///
+/// More accurately, it simply doesn't use heavy object-orientation, only functions and data.
+/// The reason it is written in C++ is because there are existing, helpful standard library features used in non-kernels,
+/// and NVCC natively compiles for C++, and it feels wasteful to not use what's available.
+///
 /// 
 /// CURRENT ISSUES:
 /// Some of the time, WaveOut may have a stroke and start reading the binary as PCM data.
 /// This seems to be completely random, and I have no clue how to fix it.
 /// This is not good, it's really noisy and causes a segfault upon reaching the end of the binary.
-/// Anyone who might know how to fix it, please let me know. I might just switch to WASAPI.
-/// It may be an issue with the header/buffer, as the audio seems to go past where it's supposed to go.
+/// Anyone who might know how to fix it, please let me know. I might just switch to WASAPI or even SoLoud.
 /// 
 /// Changelog:
 /// v1.0: Initial release, with 5 graphical and audio effects (<graphical effect> | <audio effect> | <duration>):
@@ -33,9 +37,10 @@
 ///	- Clean up threads the right way (events and signal checks instead of TerminateThread), allowing threads to clean up after themselves.
 /// - Optimize the pixel dissolving effect and XOR fractal effect with CUDA.
 /// - Replace rectangle jumbling with a quirky, CUDA-accelerated interlacing effect.
+/// Replace icon spam with a blurring Von Neumann median effect.
 /// - Reduce the amount of pixel drift in the pixel dissolving effect to give a blobbier effect, similar to GOL amoeba rules.
 /// - Speed up text spam to keep up with the flashiness of the new CUDA-accelerated effects.
-/// 
+/// Change the order of the effects.
 
 #pragma region Preprocessor
 #include <iostream>
